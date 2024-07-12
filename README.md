@@ -45,6 +45,7 @@ Live Demo - [Click Here](https://www.youtube.com/shorts/Q2kjM0C15Rg)
 
 - [Heads App](https://github.com/HimanshuS1nha/Event-Management-Heads-App)
 - [Scanner App](https://github.com/HimanshuS1nha/Event-Management-Scanner-App)
+- [Admin App](https://github.com/HimanshuS1nha/Event-Management-Admin-App)
 - [Server](https://github.com/HimanshuS1nha/Event-Management-Server)
 
 ## 🚀 About Me
