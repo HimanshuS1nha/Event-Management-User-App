@@ -5,10 +5,12 @@ import { useMutation } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
 import { router, useLocalSearchParams } from "expo-router";
 import OTPTextInput from "react-native-otp-textinput";
+import { ZodError } from "zod";
 
 import SafeView from "@/components/SafeView";
 import LoadingModal from "@/components/LoadingModal";
 import Title from "@/components/Title";
+import { resendOtpValidator } from "@/validators/resend-otp-validator";
 
 const Verify = () => {
   const { email } = useLocalSearchParams();
@@ -46,9 +48,11 @@ const Verify = () => {
   const { mutate: handleResendOtp, isPending: otpResendPending } = useMutation({
     mutationKey: ["resend-otp"],
     mutationFn: async () => {
+      const parsedData = await resendOtpValidator.parseAsync({ email });
+
       const { data } = await axios.post(
         `${process.env.EXPO_PUBLIC_API_URL}/resend-otp/user`,
-        { email }
+        { ...parsedData }
       );
 
       return data as { message: string };
@@ -57,7 +61,9 @@ const Verify = () => {
       Alert.alert("Success", data.message);
     },
     onError: (error) => {
-      if (error instanceof AxiosError && error.response?.data.error) {
+      if (error instanceof ZodError) {
+        Alert.alert("Error", error.errors[0].message);
+      } else if (error instanceof AxiosError && error.response?.data.error) {
         Alert.alert("Error", error.response.data.error);
       } else {
         Alert.alert("Error", "Some error occured. Please try again later!");
