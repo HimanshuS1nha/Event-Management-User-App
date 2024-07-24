@@ -42,6 +42,28 @@ const Verify = () => {
       }
     },
   });
+
+  const { mutate: handleResendOtp, isPending: otpResendPending } = useMutation({
+    mutationKey: ["resend-otp"],
+    mutationFn: async () => {
+      const { data } = await axios.post(
+        `${process.env.EXPO_PUBLIC_API_URL}/resend-otp/user`,
+        { email }
+      );
+
+      return data as { message: string };
+    },
+    onSuccess: (data) => {
+      Alert.alert("Success", data.message);
+    },
+    onError: (error) => {
+      if (error instanceof AxiosError && error.response?.data.error) {
+        Alert.alert("Error", error.response.data.error);
+      } else {
+        Alert.alert("Error", "Some error occured. Please try again later!");
+      }
+    },
+  });
   return (
     <SafeView>
       <LoadingModal isVisible={isPending} />
@@ -63,6 +85,15 @@ const Verify = () => {
           onPress={() => handleVerify()}
         >
           <Text style={tw`text-white text-base font-semibold`}>Verify</Text>
+        </Pressable>
+
+        <Pressable
+          onPress={() => handleResendOtp()}
+          disabled={isPending || otpResendPending}
+        >
+          <Text style={tw`text-blue-400 text-center text-base font-bold`}>
+            Resend OTP
+          </Text>
         </Pressable>
       </ImageBackground>
     </SafeView>
